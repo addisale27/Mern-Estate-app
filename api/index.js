@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import userRouter from "./routes/User.route.js";
 dotenv.config();
 mongoose
   .connect(
@@ -25,3 +26,4 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+app.use("/api/user", userRouter);
