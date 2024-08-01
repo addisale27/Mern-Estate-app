@@ -6,6 +6,7 @@ import {
   singInSuccess,
 } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import OAuth from "../components/OAuth";
 
 function Signin() {
   const [formData, setFormData] = useState({});
@@ -63,6 +64,7 @@ function Signin() {
         <button className="bg-slate-700 p-3 uppercase hover: opacity-95 rounded-xl text-white disabled:opacity-80">
           {loading ? `loading` : `sign in`}
         </button>
+        <OAuth />
       </form>
       <p className="mt-5">
         Don`t have an account?{" "}
