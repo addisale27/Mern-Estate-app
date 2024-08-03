@@ -14,7 +14,11 @@ import {
   deleteFailure,
   deleteStart,
   deleteSuccess,
+  signOutFailure,
+  signOutStart,
+  signOutSuccess,
 } from "../redux/user/userSlice";
+import { Error } from "mongoose";
 function Profile() {
   //fire base storag
   // allow read;
@@ -96,6 +100,17 @@ function Profile() {
       dispatch(deleteFailure(error.message));
     }
   }
+  async function handleSignOut() {
+    try {
+      dispatch(signOutStart());
+      const res = await fetch("/api/auth/signout");
+      const data = await res.json();
+      if (data.success === false) throw new Error(data.message);
+      dispatch(signOutSuccess());
+    } catch (error) {
+      dispatch(signOutFailure(error.message));
+    }
+  }
   return (
     <div className="max-w-xl mx-auto p-3">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -161,7 +176,9 @@ function Profile() {
         <span className="text-red-700 cursor-pointer" onClick={handleDelete}>
           Delete Account
         </span>
-        <span className="text-red-700 cursor-pointer">Sign Out</span>
+        <span className="text-red-700 cursor-pointer" onClick={handleSignOut}>
+          Sign Out
+        </span>
       </div>
       <p className="text-red-700 mt-2">{error ? error : ""}</p>
       {updateDone && (

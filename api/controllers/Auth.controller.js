@@ -69,3 +69,11 @@ export const OAuth = async (req, res, next) => {
     next(error);
   }
 };
+export const SignOut = async (req, res, next) => {
+  try {
+    res.clearCookie("access_token");
+    res.status(200).json("User signed out!");
+  } catch (error) {
+    next(error);
+  }
+};
