@@ -36,8 +36,8 @@ export const OAuth = async (req, res, next) => {
   try {
     const { email, name, photo } = req.body;
     const user = await User.findOne({ email });
-    const { password, ...rest } = user._doc;
     if (user) {
+      const { password, ...rest } = user._doc;
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       res
         .cookie("access_token", token, { httpOnly: true })
@@ -58,6 +58,7 @@ export const OAuth = async (req, res, next) => {
         photo,
       });
       await newUser.save();
+      const { password, ...rest } = newUser._doc;
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       res
         .cookie("access_token", token, { httpOnly: true })

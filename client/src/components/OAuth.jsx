@@ -29,6 +29,7 @@ function OAuth() {
         }),
       });
       const data = await res.json();
+
       if (data.success === false) throw new Error(data.message);
 
       navigate("/");

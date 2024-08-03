@@ -11,6 +11,9 @@ import {
   updateFailure,
   updateStart,
   updateSuccess,
+  deleteFailure,
+  deleteStart,
+  deleteSuccess,
 } from "../redux/user/userSlice";
 function Profile() {
   //fire base storag
@@ -79,6 +82,20 @@ function Profile() {
       dispatch(updateFailure(error.message));
     }
   }
+  async function handleDelete() {
+    try {
+      dispatch(deleteStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success === false) throw new Error(data.message);
+
+      dispatch(deleteSuccess());
+    } catch (error) {
+      dispatch(deleteFailure(error.message));
+    }
+  }
   return (
     <div className="max-w-xl mx-auto p-3">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -141,7 +158,9 @@ function Profile() {
         </button>
       </form>
       <div className="flex justify-between my-5">
-        <span className="text-red-700 cursor-pointer">Delete Account</span>
+        <span className="text-red-700 cursor-pointer" onClick={handleDelete}>
+          Delete Account
+        </span>
         <span className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
       <p className="text-red-700 mt-2">{error ? error : ""}</p>
