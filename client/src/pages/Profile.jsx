@@ -19,6 +19,7 @@ import {
   signOutSuccess,
 } from "../redux/user/userSlice";
 import { Error } from "mongoose";
+import { Link } from "react-router-dom";
 function Profile() {
   //fire base storag
   // allow read;
@@ -171,6 +172,12 @@ function Profile() {
         >
           {loading ? `loading` : `update`}
         </button>
+        <Link
+          to="/create-listing"
+          className="bg-green-700 rounded-lg p-3 uppercase text-center text-white hover:opacity-95"
+        >
+          create listing
+        </Link>
       </form>
       <div className="flex justify-between my-5">
         <span className="text-red-700 cursor-pointer" onClick={handleDelete}>
