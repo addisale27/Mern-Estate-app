@@ -2,6 +2,7 @@ import User from "../models/User.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { errorHandler } from "../utils/error.js";
+
 export const signUp = async (req, res, next) => {
   const { username, password, email } = req.body;
   const hashedPassword = bcryptjs.hashSync(password, 10);

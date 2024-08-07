@@ -7,11 +7,13 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import { useNavigate } from "react-router-dom";
 
 function CreateListing() {
+  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
-    imageUrls: [],
+    imgUrls: [],
     name: "",
     description: "",
     type: "rent",
@@ -19,7 +21,7 @@ function CreateListing() {
     bedrooms: 1,
     bathrooms: 1,
     regularPrice: 1000,
-    discountedPrice: 1000,
+    discountPrice: 1000,
     offer: false,
     parking: false,
     furnished: false,
@@ -52,7 +54,7 @@ function CreateListing() {
     });
   }
   function handleImageUpload() {
-    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+    if (files.length > 0 && files.length + formData.imgUrls.length < 7) {
       setUploading(true);
       setImageUploadError(null);
 
@@ -64,7 +66,7 @@ function CreateListing() {
         .then((urls) => {
           setFormData({
             ...formData,
-            imageUrls: formData.imageUrls.concat(urls),
+            imgUrls: formData.imgUrls.concat(urls),
           });
           setUploading(false);
           setImageUploadError(null);
@@ -82,7 +84,7 @@ function CreateListing() {
   function handleDeleteImage(id) {
     setFormData({
       ...formData,
-      imageUrls: formData.imageUrls.filter((image, index) => index !== id),
+      imgUrls: formData.imgUrls.filter((_, index) => index !== id),
     });
   }
   function handleChange(e) {
@@ -104,13 +106,17 @@ function CreateListing() {
       setFormData({ ...formData, [e.target.id]: e.target.value });
     }
   }
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   async function handleSubmit(e) {
     e.preventDefault();
     try {
       setError(false);
       setLoading(true);
+      if (formData.imgUrls.length < 1)
+        throw new Error("You must upload at least one image!");
+      if (formData.regularPrice < formData.discountPrice)
+        throw new Error("Discount Price must be less than regular price!");
       const res = await fetch("/api/listing/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,9 +124,11 @@ function CreateListing() {
       });
       const data = await res.json();
       if (data.success === false) throw new Error(data.message);
+      setLoading(false);
+      navigate(`/listing/${data._id}`);
       console.log(data);
     } catch (error) {
-      setError(true);
+      setError(error.message);
       setLoading(false);
     }
   }
@@ -252,25 +260,32 @@ function CreateListing() {
               />
               <div className="flex flex-col  items-center">
                 <p>Regular price</p>
-                <span className="text-gray-400 text-xs">($ /Month)</span>
+                {formData.type === "rent" && (
+                  <span className="text-gray-400 text-xs">($ /Month)</span>
+                )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                id="discountedPrice"
-                required
-                className="p-3 border border-gray-300 rounded-lg"
-                min={1000}
-                max={1000000000}
-                onChange={handleChange}
-                value={formData.discountedPrice}
-              />
-              <div className="flex flex-col  items-center">
-                <p>Discounted price</p>
-                <span className="text-gray-400 text-xs">($ /Month)</span>
+            {formData.offer && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  id="discountPrice"
+                  required
+                  className="p-3 border border-gray-300 rounded-lg"
+                  min={1000}
+                  max={1000000000}
+                  onChange={handleChange}
+                  value={formData.discountPrice}
+                />
+
+                <div className="flex flex-col  items-center">
+                  <p>Discounted price</p>
+                  {formData.type === "rent" && (
+                    <span className="text-gray-400 text-xs">($ /Month)</span>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
         <div className=" flex flex-col flex-1 gap-4">
@@ -303,7 +318,7 @@ function CreateListing() {
           {imageUploadError && (
             <p className="text-red-700">{imageUploadError}</p>
           )}
-          {formData.imageUrls.map((image, index) => (
+          {formData.imgUrls.map((image, index) => (
             <div
               key={index}
               className="flex justify-between items-center p-3 border"
@@ -328,9 +343,7 @@ function CreateListing() {
           >
             {loading ? `creating...` : `create listing`}
           </button>
-          {error && (
-            <p className="text-red-700 text-sm">can`t create you list</p>
-          )}
+          {error && <p className="text-red-700 text-sm">{error}</p>}
         </div>
       </form>
     </main>
