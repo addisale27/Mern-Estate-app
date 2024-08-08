@@ -34,10 +34,10 @@ function UpdateListing() {
   useEffect(function () {
     async function fetchId() {
       try {
-        console.log(listingId);
+        // console.log(listingId);
         const res = await fetch(`/api/listing/get/${listingId}`);
         const data = await res.json();
-        console.log(data);
+        //console.log(data);
         if (data.success === false) throw new Error(data.message);
         setFormData(data);
       } catch (error) {
@@ -140,9 +140,10 @@ function UpdateListing() {
         body: JSON.stringify({ ...formData, userRef: currentUser._id }),
       });
       const data = await res.json();
+
       if (data.success === false) throw new Error(data.message);
       setLoading(false);
-      navigate(`/listing/${data._id}`);
+      navigate(`/listing/${listingId}`);
       console.log(data);
     } catch (error) {
       setError(error.message);

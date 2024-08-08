@@ -221,12 +221,16 @@ function Profile() {
           Your profile updated successfully!
         </p>
       )}
-      <button className="text-green-700 w-full" onClick={handleShowListings}>
-        Show listing
-      </button>
-      <p className="text-red-700">
-        {showListingError ? `Something went Wrong to show the Listings!` : ""}
-      </p>
+
+      <>
+        <button className="text-green-700 w-full" onClick={handleShowListings}>
+          Show listing
+        </button>
+        <p className="text-red-700">
+          {showListingError ? `Something went Wrong to show the Listings!` : ""}
+        </p>
+      </>
+
       {userListings.length > 0 && (
         <div className=" flex flex-col gap-4">
           <h1 className="font-semibold text-center mt-7 text-2xl capitalize">
